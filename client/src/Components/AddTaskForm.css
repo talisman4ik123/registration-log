@@ -5,10 +5,10 @@
     background-color: #ddd;
     z-index: 10;
     border-bottom-right-radius: 20px;
-    right: -50%;
+    right: -80%;
     bottom: 0;
     opacity: 0;
-    transition: all .2s ease-in;
+    transition: all .15s ease-in;
     display: flex;
     justify-content: center;
     padding: 80px;
@@ -88,4 +88,10 @@
     border: none;
     background-color: transparent;
     cursor: pointer;
+}
+
+.error-message {
+    color: rgb(234, 53, 53);
+    font-weight: bold;
+    font-size: 14px;
 }

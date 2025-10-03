@@ -89,7 +89,7 @@ const CalendarApp = () => {
             ))}
           </div>
         </div>
-        <TaskList/>
+        <TaskList currentDate={currentDate}/>
       </div>
     </div>
   )
