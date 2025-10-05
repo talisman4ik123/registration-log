@@ -2,7 +2,7 @@ import { useState } from 'react'
 import TaskList from './TaskList'
 
 const CalendarApp = () => {
-  const daysOfWeek = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
+  const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
   const monthsOfYear = [
     'Январь',
     'Февраль',
@@ -24,7 +24,12 @@ const CalendarApp = () => {
 
   const currentDay = currentDate.getDate()
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
-  const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay()
+
+  // Изменение: расчет первого дня месяца с понедельника в начале недели
+  const firstDayOfMonth = (() => {
+    const day = new Date(currentYear, currentMonth, 1).getDay()
+    return day === 0 ? 6 : day - 1
+  })()
 
   const prevMonth = () => {
     if (currentMonth === 0) {
@@ -69,9 +74,11 @@ const CalendarApp = () => {
           </div>
           
           <div className="days">
+            {/* В начале добавляем пустые ячейки для корректного отображения недели */}
             {[...Array(firstDayOfMonth).keys()].map((_, index) => (
-              <span key={`empty-${index}`} />
+              <span key={`empty-${index}`}></span>
             ))}
+            {/* Отрисовка дней месяца */}
             {[...Array(daysInMonth).keys()].map((day) => (
               <span
                 key={day + 1}

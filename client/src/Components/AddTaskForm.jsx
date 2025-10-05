@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
 // eslint-disable-next-line react/prop-types
-function AddTaskForm({showStatus, onButtonClick, currentDate}) {
+function AddTaskForm({showStatus, onButtonClick, currentDate, onAddSuccess}) {
 
     const [hours, setHours] = useState("8");
     const [minutes, setMinutes] = useState("00");
@@ -17,47 +17,55 @@ function AddTaskForm({showStatus, onButtonClick, currentDate}) {
     const dateString = dateObj.toLocaleDateString('en-US', options).replace(',', '');
 
     const sendDate = async () => {
-
         if (name == "") {
             setError("ФИО не должно быть пустым!");
-        } else {
-            const data = {
-                date: dateString,
-                time: `${hours}:${minutes}`,
-                name,
-                phone,
-                comment
-            }
-
-            setLoading(true);
-
-            try {
-                const response = await fetch('http://localhost:5000/api/create', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data),
-                });
-
-                if (!response.ok) {
-                    const errorMessage = await response.json();
-                    setError(errorMessage.message || 'Ошибка во время добавления записи!');
-                    setLoading(false);
-                    return;
-                }
-                setError(null);
-                setHours("8");
-                setMinutes("00");
-                setName("");
-                setPhone("");
-                setComment("");
-                onButtonClick();
-            } catch (err) {
-                setError(err || 'Ошибка сервера!');
-            } finally {
-                setLoading(false);
-            }
+            return; // добавьте возврат, чтобы не продолжать при ошибке
         }
-    }
+
+        const data = {
+            date: dateString,
+            time: `${hours}:${minutes}`,
+            name,
+            phone,
+            comment
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await fetch('http://localhost:5000/api/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const errorMessage = await response.json();
+            setError(errorMessage.message || 'Ошибка во время добавления записи!');
+            return;
+        }
+
+        // Очистка полей
+        setHours("8");
+        setMinutes("00");
+        setName("");
+        setPhone("");
+        setComment("");
+        setError(null);
+
+        // Обновление списка записей
+        if (onAddSuccess) {
+            onAddSuccess();
+        }
+      
+        // Закрыть форму
+        onButtonClick();
+        } catch (err) {
+        setError(err.message || 'Ошибка сервера!');
+        } finally {
+        setLoading(false);
+        }
+    };
 
     function handleCloseBtn() {
         setHours("8");

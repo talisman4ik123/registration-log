@@ -26,7 +26,7 @@ class Controller {
                 .status(200)
                 .json({ message: "Запись успешно добавлена!" });
         } catch (error) {
-            console.error(`server error: ${error}`);
+            console.error(`server error during note creation: ${error}`);
             return res.status(500).json({ message: "Серверная ошибка!" });
         }
     }
@@ -38,7 +38,33 @@ class Controller {
             const note = await db.query("SELECT * FROM registration WHERE date=$1", [date]);
             return res.json(note.rows)
         } catch (error) {
-            console.error(`server error: ${error}`);
+            console.error(`server error during receiving notes: ${error}`);
+            return res.status(500).json({ message: "Серверная ошибка!" });
+        }
+    }
+
+    async deleteNote(req, res) {
+        try {
+            const {date, time} = req.body;
+            await db.query("DELETE FROM registration WHERE date=$1 AND time=$2", [date, time]);
+            
+            const notes = await db.query("SELECT * FROM registration");
+            return res.json(notes.rows);
+        } catch (error) {
+            console.error(`server error during note deletion: ${error}`);
+            return res.status(500).json({ message: "Серверная ошибка!" });
+        }
+    }
+
+    async completeNote(req, res) {
+        try {
+            const {date, time} = req.body;
+            await db.query("UPDATE registration SET status = 'complete' WHERE date=$1 AND time=$2", [date, time]);
+
+            const notes = await db.query("SELECT * FROM registration");
+            return res.json(notes.rows);
+        } catch (error) {
+            console.error(`server error during note complete: ${error}`);
             return res.status(500).json({ message: "Серверная ошибка!" });
         }
     }
