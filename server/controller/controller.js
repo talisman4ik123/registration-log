@@ -68,6 +68,19 @@ class Controller {
             return res.status(500).json({ message: "Серверная ошибка!" });
         }
     }
+
+    async updateNote(req, res) {
+        try {
+            const {id, date, time, name, phone, comment} = req.body;
+            await db.query("UPDATE registration SET date = $1, time = $2, name = $3, phone = $4, comment = $5 WHERE id = $6", [date, time, name, phone, comment, id]);
+
+            const notes = await db.query("SELECT * FROM registration");
+            return res.json(notes.rows);
+        } catch (error) {
+            console.error(`server error during note update: ${error}`);
+            return res.status(500).json({ message: "Серверная ошибка!" });
+        }
+    }
 }
 
 module.exports = new Controller();

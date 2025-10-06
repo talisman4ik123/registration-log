@@ -5,6 +5,7 @@ import { useState } from "react";
 import AddTaskForm from "./AddTaskForm";
 import { useEffect } from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
+import ChangeForm from "./ChangeForm";
 
 // eslint-disable-next-line react/prop-types
 function TaskList({currentDate}) {
@@ -110,8 +111,29 @@ function TaskList({currentDate}) {
             alert('Ошибка сервера' || err.message);
         }
     }
-    
 
+    const [changeForm, setChangeForm] = useState("");
+    const [currentNote, setCurrentNote] = useState({});
+    const [nodeId, setNodeId] = useState(null);
+    
+    function handleChange(noteTime, name, phone, comment, id) {
+        if (changeForm == "") {
+            setChangeForm("active");
+            const [hours, minutes] = noteTime.split(":");
+            const obj = {
+                hours,
+                minutes,
+                name,
+                phone,
+                comment
+            }
+            setNodeId(id);
+            setCurrentNote(obj);
+        } else {
+            setChangeForm("");
+            setCurrentNote({});
+        }
+    }
 
     return (
         <div className="task-list-wrapper">
@@ -128,7 +150,7 @@ function TaskList({currentDate}) {
                         </div>
                         {note.status === "active" ? 
                         <div className="task-item-btns">
-                            <button className="btn-change" >
+                            <button className="btn-change" onClick={() => handleChange(note.time, note.name, note.phone, note.comment, note.id)}>
                                 <span>Изменить</span>
                                 <FaPen />
                             </button>
@@ -147,6 +169,7 @@ function TaskList({currentDate}) {
 }
             <button onClick={handleTaskForm} className="add-new-task-btn">Добавить Запись</button>
             <AddTaskForm onButtonClick={handleTaskForm} showStatus={showAddForm} currentDate={currentDate} onAddSuccess={refreshData}/>
+            <ChangeForm onButtonClick={handleChange} showStatus={changeForm} currentDate={currentDate} onAddSuccess={refreshData} currentNote={currentNote} nodeId={nodeId}/>
         </div>
     )
 }
