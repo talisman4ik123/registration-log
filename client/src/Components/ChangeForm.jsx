@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { IoMdClose } from "react-icons/io";
+import { server_url } from "./serverUrl";
 
 // eslint-disable-next-line react/prop-types
+/* eslint-disable react/prop-types */
 function ChangeForm({ showStatus, onButtonClick, currentDate, onAddSuccess, currentNote, nodeId}) {
     const [hours, setHours] = useState("");
     const [minutes, setMinutes] = useState("");
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
     const [comment, setComment] = useState("");
+    const [registr, setRegistr] = useState("Ярошин");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -19,6 +22,7 @@ function ChangeForm({ showStatus, onButtonClick, currentDate, onAddSuccess, curr
             setName(currentNote.name || "");
             setPhone(currentNote.phone || "");
             setComment(currentNote.comment || "");
+            setRegistr(currentNote.registr || "Ярошин");
         }
     }, [currentNote]);
 
@@ -35,7 +39,7 @@ function ChangeForm({ showStatus, onButtonClick, currentDate, onAddSuccess, curr
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:5000/api/update', {
+            const response = await fetch(`${server_url}/api/update`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -44,7 +48,8 @@ function ChangeForm({ showStatus, onButtonClick, currentDate, onAddSuccess, curr
                     time: `${hours}:${minutes}`,
                     name,
                     phone,
-                    comment
+                    comment,
+                    registr
                 }),
             });
 
@@ -60,6 +65,7 @@ function ChangeForm({ showStatus, onButtonClick, currentDate, onAddSuccess, curr
             setName("");
             setPhone("");
             setComment("");
+            setRegistr("Ярошин");
             setError(null);
 
             // Обновление списка записей
@@ -83,6 +89,7 @@ function ChangeForm({ showStatus, onButtonClick, currentDate, onAddSuccess, curr
         setName("");
         setPhone("");
         setComment("");
+        setRegistr("Ярошин");
         onButtonClick();
     }
 
@@ -131,6 +138,17 @@ function ChangeForm({ showStatus, onButtonClick, currentDate, onAddSuccess, curr
                 <div className="task-form-group">
                     <label htmlFor="addFormInfo">Комментарий</label>
                     <input type="text" id="addFormInfo" value={comment} onChange={(e) => setComment(e.target.value)}/>
+                </div>
+
+                <div className="task-form-group">
+                    <label htmlFor="addFormRegistr">Запись добавил</label>
+                    <select name="registr" id="addFormRegistr" value={registr} onChange={(e) => setRegistr(e.target.value)}>
+                        <option value="Ярошин">Ярошин</option>
+                        <option value="Кутай">Кутай</option>
+                        <option value="Андреева">Андреева</option>
+                        <option value="Буров">Буров</option>
+                        <option value="Савченко">Савченко</option>
+                    </select>
                 </div>
 
                 <span className="error-message">{error}</span>

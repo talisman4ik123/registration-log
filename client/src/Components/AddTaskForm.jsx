@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
+import { server_url } from "./serverUrl";
 
 // eslint-disable-next-line react/prop-types
 function AddTaskForm({showStatus, onButtonClick, currentDate, onAddSuccess}) {
@@ -9,6 +10,7 @@ function AddTaskForm({showStatus, onButtonClick, currentDate, onAddSuccess}) {
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
     const [comment, setComment] = useState("");
+    const [registr, setRegistr] = useState("Ярошин");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -27,13 +29,14 @@ function AddTaskForm({showStatus, onButtonClick, currentDate, onAddSuccess}) {
             time: `${hours}:${minutes}`,
             name,
             phone,
-            comment
+            comment,
+            registr
         }
 
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:5000/api/create', {
+            const response = await fetch(`${server_url}/api/create`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -51,6 +54,7 @@ function AddTaskForm({showStatus, onButtonClick, currentDate, onAddSuccess}) {
         setName("");
         setPhone("");
         setComment("");
+        setRegistr("Ярошин");
         setError(null);
 
         // Обновление списка записей
@@ -75,6 +79,7 @@ function AddTaskForm({showStatus, onButtonClick, currentDate, onAddSuccess}) {
         setPhone("");
         setComment("");
         onButtonClick();
+        setRegistr("Ярошин");
     }
 
     return (
@@ -118,6 +123,16 @@ function AddTaskForm({showStatus, onButtonClick, currentDate, onAddSuccess}) {
                 <div className="task-form-group">
                     <label htmlFor="addFormInfo">Комментарий</label>
                     <input type="text" id="addFormInfo" value={comment} onChange={(e) => setComment(e.target.value)}/>
+                </div>
+                <div className="task-form-group">
+                    <label htmlFor="addFormRegistr">Запись добавил</label>
+                    <select name="registr" id="addFormRegistr" value={registr} onChange={(e) => setRegistr(e.target.value)}>
+                        <option value="Ярошин">Ярошин</option>
+                        <option value="Кутай">Кутай</option>
+                        <option value="Андреева">Андреева</option>
+                        <option value="Буров">Буров</option>
+                        <option value="Савченко">Савченко</option>
+                    </select>
                 </div>
 
                 <span className="error-message">{error}</span>

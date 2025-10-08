@@ -7,3 +7,7 @@ CREATE TABLE registration (
     comment TEXT,
     status VARCHAR(50) NOT NULL,
 );
+
+ALTER TABLE registration ADD COLUMN registr VARCHAR(50);
+ALTER TABLE registration ADD COLUMN ip VARCHAR(50);
+ALTER TABLE registration ADD COLUMN change_date VARCHAR(50);

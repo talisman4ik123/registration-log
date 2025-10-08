@@ -6,6 +6,7 @@ import AddTaskForm from "./AddTaskForm";
 import { useEffect } from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
 import ChangeForm from "./ChangeForm";
+import { server_url } from "./serverUrl";
 
 // eslint-disable-next-line react/prop-types
 function TaskList({currentDate}) {
@@ -21,9 +22,8 @@ function TaskList({currentDate}) {
         }
     }
 
-
-    const [loading, setLoading] = useState(false); 
     const [error, setError] = useState(null);
+
     const dateObj = new Date(currentDate); // ваша дата
     const options = { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' };
     const dateString = dateObj.toLocaleDateString('en-US', options).replace(',', '');
@@ -31,8 +31,7 @@ function TaskList({currentDate}) {
 
     const fetchData = async () => {
         try {
-            setLoading(true);
-            const response = await fetch('http://localhost:5000/api/currentNotes', {
+            const response = await fetch(`${server_url}/api/currentNotes`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ date: dateString }),
@@ -50,8 +49,6 @@ function TaskList({currentDate}) {
             setError(null);
         } catch (err) {
             setError('Ошибка сервера!' || err.message);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -70,7 +67,7 @@ function TaskList({currentDate}) {
         if (!confirmDelete) return;
 
         try {
-            const response = await fetch('http://localhost:5000/api/delete', {
+            const response = await fetch(`${server_url}/api/delete`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ date: dateString, time: noteTime }),
@@ -93,7 +90,7 @@ function TaskList({currentDate}) {
 
     const handleComplete = async (noteTime) => {
         try {
-            const response = await fetch('http://localhost:5000/api/complete', {
+            const response = await fetch(`${server_url}/api/complete`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ date: dateString, time: noteTime }),
@@ -116,7 +113,7 @@ function TaskList({currentDate}) {
     const [currentNote, setCurrentNote] = useState({});
     const [nodeId, setNodeId] = useState(null);
     
-    function handleChange(noteTime, name, phone, comment, id) {
+    function handleChange(noteTime, name, phone, comment, id, registr) {
         if (changeForm == "") {
             setChangeForm("active");
             const [hours, minutes] = noteTime.split(":");
@@ -125,7 +122,8 @@ function TaskList({currentDate}) {
                 minutes,
                 name,
                 phone,
-                comment
+                comment,
+                registr
             }
             setNodeId(id);
             setCurrentNote(obj);
@@ -137,8 +135,7 @@ function TaskList({currentDate}) {
 
     return (
         <div className="task-list-wrapper">
-            {loading ? <p className="task-list-loading">Загрузка Данных...</p> : 
-            error ? <p className="task-list-error">{error}</p> :
+            {error ? <p className="task-list-error">{error}</p> :
             data.length == 0 ? <p className="happy-text">Записей на сегодня нет🤗</p> : 
             <ul className="task-list">
                 {data.map(note => (
@@ -146,11 +143,11 @@ function TaskList({currentDate}) {
                         <div className="task-item-time">{note.time}</div>
                         <div className="task-item-main">
                             <div>{note.name}, {note.phone}</div>
-                            <div>{note.comment}</div>
+                            <div>{note.comment} / ({note.registr})</div>
                         </div>
                         {note.status === "active" ? 
                         <div className="task-item-btns">
-                            <button className="btn-change" onClick={() => handleChange(note.time, note.name, note.phone, note.comment, note.id)}>
+                            <button className="btn-change" onClick={() => handleChange(note.time, note.name, note.phone, note.comment, note.id, note.registr)}>
                                 <span>Изменить</span>
                                 <FaPen />
                             </button>
